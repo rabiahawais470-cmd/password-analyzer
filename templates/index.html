@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength & Security Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <h1>Password Analyzer</h1>
+            </div>
+            <p class="subtitle">Professional cybersecurity analysis powered by Shannon Entropy & HaveIBeenPwned</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="input-group">
+                    <label for="password-input" class="input-label">Enter Your Password</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password-input" 
+                            class="password-input" 
+                            placeholder="Type your password to analyze..."
+                            autocomplete="off"
+                        >
+                        <button class="toggle-visibility" id="toggle-btn" title="Show/Hide Password">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <small class="input-note">Your password is analyzed locally in your browser. Never sent to external servers except for breach checking via k-Anonymity.</small>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results" style="display: none;">
+                
+                <!-- Strength Meter -->
+                <div class="strength-card">
+                    <h2>Strength Assessment</h2>
+                    <div class="strength-meter-container">
+                        <div class="strength-meter">
+                            <div class="strength-bar" id="strength-bar"></div>
+                        </div>
+                        <div class="strength-info">
+                            <span class="strength-score" id="strength-score">0%</span>
+                            <span class="strength-label" id="strength-label">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="metrics-grid">
+                    <!-- Shannon Entropy Card -->
+                    <div class="metric-card entropy-card">
+                        <div class="metric-header">
+                            <h3>Shannon Entropy</h3>
+                            <span class="info-icon" title="Measures password randomness and unpredictability">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <text x="12" y="16" text-anchor="middle" font-size="14" font-weight="bold" fill="white">i</text>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="metric-value">
+                            <span class="value" id="entropy-value">0.00</span>
+                            <span class="unit">bits/char</span>
+                        </div>
+                        <div class="metric-detail">
+                            <span class="label">Total Entropy:</span>
+                            <span class="value" id="entropy-bits">0.00</span>
+                            <span class="unit">bits</span>
+                        </div>
+                        <div class="entropy-bar">
+                            <div class="entropy-fill" id="entropy-fill"></div>
+                        </div>
+                        <small>Target: >50 bits</small>
+                    </div>
+
+                    <!-- HaveIBeenPwned Card -->
+                    <div class="metric-card breach-card">
+                        <div class="metric-header">
+                            <h3>Breach Status</h3>
+                            <span class="info-icon" title="Checked via k-Anonymity protocol">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="breach-status" id="breach-status">
+                            <span class="breach-message" id="breach-message">Checking...</span>
+                        </div>
+                        <div class="breach-count" id="breach-count" style="display: none;">
+                            Found in <span id="breach-number">0</span> breach(es)
+                        </div>
+                        <small class="privacy-note">Protected by k-Anonymity: Only hash prefix sent to API</small>
+                    </div>
+
+                    <!-- Character Analysis Card -->
+                    <div class="metric-card character-card">
+                        <h3>Character Set Analysis</h3>
+                        <div class="character-checks">
+                            <div class="check-item">
+                                <span class="check-box" id="check-lower">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </span>
+                                <span>Lowercase (a-z)</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-box" id="check-upper">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </span>
+                                <span>Uppercase (A-Z)</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-box" id="check-digit">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </span>
+                                <span>Digits (0-9)</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-box" id="check-special">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </span>
+                                <span>Special (!@#$%^&*)</span>
+                            </div>
+                        </div>
+                        <div class="charset-info">
+                            <span class="label">Charset Size:</span>
+                            <span class="value" id="charset-size">0</span>
+                            <span class="unit">characters</span>
+                        </div>
+                    </div>
+
+                    <!-- Pattern Analysis Card -->
+                    <div class="metric-card pattern-card">
+                        <div class="metric-header">
+                            <h3>Pattern Detection</h3>
+                            <span class="info-icon" title="Detects common patterns, sequences, and dictionary words">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="pattern-score">
+                            <span class="score-label">zxcvbn Score:</span>
+                            <span class="score-value" id="pattern-score">0</span>
+                            <span class="score-unit">/4</span>
+                        </div>
+                        <div class="pattern-bar">
+                            <div class="pattern-fill" id="pattern-fill"></div>
+                        </div>
+                        <small>Higher = Less predictable patterns</small>
+                    </div>
+                </div>
+
+                <!-- Breakdown Scores -->
+                <div class="breakdown-card">
+                    <h3>Scoring Breakdown</h3>
+                    <div class="score-breakdown">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Length Score</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" id="length-score-bar"></div>
+                            </div>
+                            <span class="breakdown-value" id="length-score-value">0/25</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Variety Score</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" id="variety-score-bar"></div>
+                            </div>
+                            <span class="breakdown-value" id="variety-score-value">0/25</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Pattern Score</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" id="pattern-score-bar"></div>
+                            </div>
+                            <span class="breakdown-value" id="pattern-score-value">0/25</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Entropy Score</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" id="entropy-score-bar"></div>
+                            </div>
+                            <span class="breakdown-value" id="entropy-score-value">0/25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="recommendations-card">
+                    <h3>
+                        <svg class="rec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                        </svg>
+                        Recommendations
+                    </h3>
+                    <ul class="recommendations-list" id="recommendations-list">
+                        <li>Analyzing...</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Empty State -->
+            <section class="empty-state" id="empty-state">
+                <div class="empty-state-content">
+                    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <p>Start by entering a password to analyze</p>
+                    <p class="empty-note">Get instant feedback on strength, randomness, and security</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <h3>About This Tool</h3>
+                <div class="footer-grid">
+                    <div class="footer-section">
+                        <h4>Shannon Entropy</h4>
+                        <p>Measures the average information content and randomness of a password. Higher entropy indicates greater resistance to brute-force attacks.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4>HaveIBeenPwned API</h4>
+                        <p>Checks if your password has appeared in known data breaches using k-Anonymity protocol, ensuring your password hash is never fully exposed.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4>zxcvbn Library</h4>
+                        <p>Advanced pattern recognition library that detects common sequences, dictionary words, keyboard patterns, and other predictable elements.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Key Metrics</h4>
+                        <p><strong>Entropy:</strong> >50 bits is strong | <strong>Length:</strong> ≥12 characters recommended | <strong>Variety:</strong> Mix of character types</p>
+                    </div>
+                </div>
+            </div>
+            <div class="privacy-footer">
+                <p>Your privacy is protected: Password analysis happens in your browser. Only hash prefixes are sent to external APIs.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password-input');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const resultsSection = document.getElementById('results');
+        const emptyState = document.getElementById('empty-state');
+        let isPasswordVisible = false;
+
+        // Toggle password visibility
+        toggleBtn.addEventListener('click', () => {
+            isPasswordVisible = !isPasswordVisible;
+            passwordInput.type = isPasswordVisible ? 'text' : 'password';
+        });
+
+        // Real-time password analysis
+        passwordInput.addEventListener('input', async (e) => {
+            const password = e.target.value;
+
+            if (password.length === 0) {
+                resultsSection.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            resultsSection.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: password })
+                });
+
+                const data = await response.json();
+                updateUI(data);
+            } catch (error) {
+                console.error('Error analyzing password:', error);
+            }
+        });
+
+        function updateUI(data) {
+            // Strength score and label
+            const score = data.strength_score;
+            document.getElementById('strength-score').textContent = score.toFixed(0) + '%';
+            document.getElementById('strength-label').textContent = data.strength_label;
+            document.getElementById('strength-bar').style.width = score + '%';
+            document.getElementById('strength-bar').style.backgroundColor = data.color;
+
+            // Entropy
+            document.getElementById('entropy-value').textContent = data.entropy.toFixed(4);
+            document.getElementById('entropy-bits').textContent = data.entropy_bits.toFixed(2);
+            const entropyPercent = Math.min((data.entropy_bits / 50) * 100, 100);
+            document.getElementById('entropy-fill').style.width = entropyPercent + '%';
+            document.getElementById('entropy-fill').style.backgroundColor = data.color;
+
+            // Breach status
+            const breachResult = data.breach_result;
+            const breachMessage = document.getElementById('breach-message');
+            const breachCount = document.getElementById('breach-count');
+            
+            if (breachResult.compromised === null) {
+                breachMessage.textContent = 'Checking...';
+                breachMessage.className = 'breach-message checking';
+                breachCount.style.display = 'none';
+            } else if (breachResult.compromised) {
+                breachMessage.textContent = 'COMPROMISED';
+                breachMessage.className = 'breach-message compromised';
+                document.getElementById('breach-number').textContent = breachResult.breach_count;
+                breachCount.style.display = 'block';
+            } else {
+                breachMessage.textContent = 'SAFE';
+                breachMessage.className = 'breach-message safe';
+                breachCount.style.display = 'none';
+            }
+
+            // Character set analysis - update checkmarks
+            const chars = data.character_sets;
+            updateCheckmark('check-lower', chars.has_lowercase);
+            updateCheckmark('check-upper', chars.has_uppercase);
+            updateCheckmark('check-digit', chars.has_digits);
+            updateCheckmark('check-special', chars.has_special);
+            document.getElementById('charset-size').textContent = chars.charset_size;
+
+            // Pattern score
+            document.getElementById('pattern-score').textContent = data.zxcvbn_score;
+            const patternPercent = (data.zxcvbn_score / 4) * 100;
+            document.getElementById('pattern-fill').style.width = patternPercent + '%';
+            document.getElementById('pattern-fill').style.backgroundColor = data.color;
+
+            // Score breakdown
+            updateBreakdownBar('length-score-bar', 'length-score-value', data.length_score, 25);
+            updateBreakdownBar('variety-score-bar', 'variety-score-value', data.variety_score, 25);
+            updateBreakdownBar('pattern-score-bar', 'pattern-score-value', data.pattern_score, 25);
+            
+            const entropyScore = Math.min(25, (data.entropy_bits / 50) * 25);
+            updateBreakdownBar('entropy-score-bar', 'entropy-score-value', entropyScore, 25);
+
+            // Recommendations
+            const recommendationsList = document.getElementById('recommendations-list');
+            recommendationsList.innerHTML = '';
+            data.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                recommendationsList.appendChild(li);
+            });
+        }
+
+        function updateBreakdownBar(barId, valueId, score, max) {
+            const percent = (score / max) * 100;
+            document.getElementById(barId).style.width = percent + '%';
+            document.getElementById(valueId).textContent = score.toFixed(0) + '/' + max;
+        }
+
+        function updateCheckmark(elementId, isChecked) {
+            const element = document.getElementById(elementId);
+            if (isChecked) {
+                element.classList.add('checked');
+                element.style.opacity = '1';
+                element.style.stroke = 'currentColor';
+            } else {
+                element.classList.remove('checked');
+                element.style.opacity = '0.3';
+            }
+        }
+
+        // Initial focus
+        passwordInput.focus();
+    </script>
+</body>
+</html>
