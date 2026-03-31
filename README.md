@@ -220,7 +220,7 @@ The analyzer combines four factors with equal weighting:
 
 ---
 
-## 🛠 Technology Stack
+##  Technology Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
