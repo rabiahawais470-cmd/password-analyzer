@@ -9,7 +9,7 @@ A professional-grade password security analysis tool built with Python and Flask
 
 **Live Analysis** | **Real-time Scoring** | **Breach Detection** | **Pattern Recognition**
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Features](#features)
 - [Cybersecurity Concepts](#cybersecurity-concepts)
@@ -21,7 +21,7 @@ A professional-grade password security analysis tool built with Python and Flask
 
 ---
 
-## ⭐ Features
+##  Features
 
 ### Real-Time Analysis
 - **Live password evaluation** as you type
@@ -48,7 +48,7 @@ A professional-grade password security analysis tool built with Python and Flask
 
 ---
 
-## 🔬 Cybersecurity Concepts
+##  Cybersecurity Concepts
 
 ### 1. Shannon Entropy (Information Theory)
 
@@ -210,11 +210,11 @@ The analyzer combines four factors with equal weighting:
 - zxcvbn score 0 = 0 points
 
 **Final Strength Categories**:
-- **80-100**: Very Strong 🔐 (Green)
-- **60-79**: Strong 💪 (Light Green)
-- **40-59**: Moderate ⚡ (Orange)
-- **20-39**: Weak ⚠️ (Red)
-- **0-19**: Very Weak ❌ (Dark Red)
+- **80-100**: Very Strong  (Green)
+- **60-79**: Strong  (Light Green)
+- **40-59**: Moderate  (Orange)
+- **20-39**: Weak  (Red)
+- **0-19**: Very Weak  (Dark Red)
 
 **Penalty**: If password found in breaches, multiply score by 0.5
 
@@ -233,7 +233,7 @@ The analyzer combines four factors with equal weighting:
 
 ---
 
-## 📦 Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -271,7 +271,7 @@ python -c "import flask, zxcvbn, requests; print('All dependencies installed suc
 
 ---
 
-## 🚀 Running the Application
+##  Running the Application
 
 ### Start the Flask Server
 
@@ -302,7 +302,7 @@ Press `Ctrl+C` in the terminal
 
 ---
 
-## 🏗 Architecture
+##  Architecture
 
 ### Project Structure
 ```
@@ -363,7 +363,7 @@ JSON Response
 
 ---
 
-## 📊 Metrics & Algorithms
+##  Metrics & Algorithms
 
 ### Shannon Entropy Calculation
 ```python
@@ -394,7 +394,7 @@ total_entropy_bits = password_length × log2(charset_size)
 
 ---
 
-## 🔒 Security Considerations
+##  Security Considerations
 
 ### What's Protected
 ✅ Password is never stored on server  
@@ -417,7 +417,7 @@ total_entropy_bits = password_length × log2(charset_size)
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Test Case Examples
 
@@ -444,7 +444,7 @@ Reasons: Found in 10+ million breach records
 
 ---
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Issue: "ModuleNotFoundError: No module named 'flask'"
 **Solution**:
@@ -473,7 +473,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📚 References
+##  References
 
 ### Cryptography & Entropy
 - Shannon, C. E. (1948). "A Mathematical Theory of Communication"
@@ -492,13 +492,13 @@ pip install -r requirements.txt
 
 ---
 
-## 📄 License
+##  License
 
 This project is open source and available for educational and professional use.
 
 ---
 
-## ✨ Features Roadmap
+##  Features Roadmap
 
 Potential future enhancements:
 - [ ] Password history tracking
@@ -512,7 +512,7 @@ Potential future enhancements:
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Improvements and bug reports are welcome! Areas for contribution:
 - Enhanced pattern detection
@@ -521,6 +521,3 @@ Improvements and bug reports are welcome! Areas for contribution:
 - Additional language support
 - Security audit results
 
----
-
-**Built with ❤️ for cybersecurity professionals and developers**
